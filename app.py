@@ -29,8 +29,7 @@ def run_inference_transform(img_path = 'file.jpg', transformed_path = 'file_tran
 	transformed_img.save(transformed_path)
 
 	# run inference using detectron2
-	detector.inference(transformed_path)
-	untransformed_result = Image.open('/home/appuser/detectron2_repo/img.jpg')
+	untransformed_result = detector.inference(transformed_path)
 
 	# unsquare
 	result_img = img_transforms._unsquare(untransformed_result, original_img)

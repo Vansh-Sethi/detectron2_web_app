@@ -1,7 +1,8 @@
-GCP_PROJECT=spot-parking-parkinglot
-APP_NAME=spot-parking-parkinglot
+GCP_PROJECT=fresh-runway-246001
+APP_NAME=neelsmlapp
 REGION="us-central1"
 MEMORY=2G
+
 
 # set project to correct one
 gcloud config set project $GCP_PROJECT
