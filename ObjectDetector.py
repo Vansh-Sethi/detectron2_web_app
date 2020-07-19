@@ -1,9 +1,5 @@
 import cv2 as cv
-import os
 import json
-import numpy as np
-import time
-import detectron2
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
 from detectron2.utils.visualizer import Visualizer
@@ -11,7 +7,9 @@ from detectron2.utils.visualizer import ColorMode
 from detectron2 import model_zoo
 from detectron2.data import MetadataCatalog, DatasetCatalog
 from detectron2.modeling import build_model
-import torch, torchvision
+import torch
+import numpy as np
+from PIL import Image
 
 class Detector:
 
@@ -54,7 +52,7 @@ class Detector:
 
 	# detectron model
 	# adapted from detectron2 colab notebook: https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5	
-	def detectron(self, file):
+	def inference(self, file):
 
 		predictor = DefaultPredictor(self.cfg)
 		im = cv.imread(file)
@@ -71,11 +69,13 @@ class Detector:
 		v = Visualizer(im[:, :, ::-1], metadata=metadata, scale=1.2)
 		v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
 
+		# get image 
+		img = Image.fromarray(np.uint8(v.get_image()[:, :, ::-1]))
+
 		# write to jpg
-		img = cv.imencode('.jpg', v.get_image())[1].tobytes()
-		cv.imwrite('img.jpg',v.get_image())
+		# cv.imwrite('img.jpg',v.get_image())
 
 		return img
 
 
-		
+

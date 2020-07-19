@@ -4,7 +4,6 @@ from flask import Flask, render_template, request, send_from_directory, send_fil
 from PIL import Image
 import requests
 import os
-import urllib.request
 import img_transforms
 
 app = Flask(__name__)
@@ -30,7 +29,7 @@ def run_inference_transform(img_path = 'file.jpg', transformed_path = 'file_tran
 	transformed_img.save(transformed_path)
 
 	# run inference using detectron2
-	detector.detectron(transformed_path)
+	detector.inference(transformed_path)
 	untransformed_result = Image.open('/home/appuser/detectron2_repo/img.jpg')
 
 	# unsquare
@@ -49,13 +48,11 @@ def run_inference_transform(img_path = 'file.jpg', transformed_path = 'file_tran
 def run_inference(img_path = 'file.jpg'):
 
 	# run inference using detectron2
-	detector.detectron(img_path)
-	result_img = Image.open('img.jpg')
+	result_img = detector.inference(img_path)
 
 	# clean up
 	try:
 		os.remove(img_path)
-		os.remove('img.jpg')
 	except:
 		pass
 
@@ -78,11 +75,7 @@ def upload():
 
 			# remove alpha channel
 			rgb_im = file.convert('RGB')
-
-			# save as jpg
 			rgb_im.save('file.jpg')
-
-			print('image saved')
 		
 		# failure
 		except:
@@ -97,7 +90,10 @@ def upload():
 		# save
 		try:
 			# save image as jpg
-			urllib.request.urlretrieve(url, 'file.jpg')
+			# urllib.request.urlretrieve(url, 'file.jpg')
+			rgb_im = load_image_url(url)
+			rgb_im = rgb_im.convert('RGB')
+			rgb_im.save('file.jpg')
 
 		# failure
 		except:
@@ -106,7 +102,7 @@ def upload():
 
 	# run inference
 	# result_img = run_inference_transform()
-	result_img = run_inference()
+	result_img = run_inference('file.jpg')
 
 	# create file-object in memory
 	file_object = io.BytesIO()
@@ -117,7 +113,7 @@ def upload():
 	# move to beginning of file so `send_file()` it will read from start    
 	file_object.seek(0)
 
-	return send_file(file_object, mimetype='image/PNG')
+	return send_file(file_object, mimetype='image/jpeg')
 
 
 if __name__ == "__main__":
